@@ -20,7 +20,7 @@ Installation
 
 Example
 -------
-
+```c++
 #include <curl-asio.h>
 #include <iostream>
 #include <fstream>
@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-
+```
 
 More examples, including one for curl-asio's [asynchronous interface](https://github.com/mologie/curl-asio/wiki/Asynchronous-interface), can be found in the [wiki](https://github.com/mologie/curl-asio/wiki) and the `examples` directory.
 
