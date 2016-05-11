@@ -1,0 +1,68 @@
+# curl-asio
+# Seamlessly integrate libcurl with Boost.Asio
+#
+# Copyright (c) 2013 Oliver Kuckertz <oliver.kuckertz@mologie.de>
+# See COPYING for license information.
+
+INCLUDE_DIRECTORIES(
+	${CURLASIO_INCLUDE_DIR}
+	${CURL_INCLUDE_DIR}
+	${Boost_INCLUDE_DIRS}
+	)
+
+# Collect all source files
+SET(LIBCURLASIO_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+FILE(GLOB LIBCURLASIO_SOURCE_FILES "${LIBCURLASIO_SOURCE_DIR}/*.cpp")
+
+# Collect all header files
+SET(LIBCURLASIO_HEADER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../include")
+FILE(GLOB LIBCURLASIO_HEADER_FILES "${LIBCURLASIO_HEADER_DIR}/curl-asio/*.h")
+LIST(APPEND LIBCURLASIO_HEADER_FILES "${LIBCURLASIO_HEADER_DIR}/curl-asio.h")
+
+# Install targets
+SET(LIBCURLASIO_INSTALL_TARGETS)
+
+# Build the shared library
+IF(BUILD_SHARED)
+	ADD_LIBRARY(
+		curlasio-shared
+		SHARED
+		${LIBCURLASIO_SOURCE_FILES}
+		${LIBCURLASIO_HEADER_FILES}
+		)
+	TARGET_LINK_LIBRARIES(curlasio-shared
+		${CURL_LIBRARIES}
+		${Boost_LIBRARIES}
+		)
+	SET_TARGET_PROPERTIES(curlasio-shared PROPERTIES
+		DEBUG_POSTFIX d
+		OUTPUT_NAME curlasio
+		)
+	LIST(APPEND LIBCURLASIO_INSTALL_TARGETS curlasio-shared)
+ENDIF()
+
+# Build the static library
+IF(BUILD_STATIC)
+	ADD_DEFINITIONS(-DCURLASIO_STATIC)
+	ADD_LIBRARY(
+		curlasio-static
+		STATIC
+		${LIBCURLASIO_SOURCE_FILES}
+		${LIBCURLASIO_HEADER_FILES}
+		)
+	SET_TARGET_PROPERTIES(curlasio-static PROPERTIES
+		DEBUG_POSTFIX d
+		OUTPUT_NAME curlasio
+		)
+	LIST(APPEND LIBCURLASIO_INSTALL_TARGETS curlasio-static)
+ENDIF()
+
+# Install all libraries/archives to $PREFIX/lib (and DLLs to $PREFIX/bin on Windows)
+INSTALL(TARGETS ${LIBCURLASIO_INSTALL_TARGETS}
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	)
+
+# Install header files to $PREFIX/include
+INSTALL(DIRECTORY "${LIBCURLASIO_HEADER_DIR}/" DESTINATION include)
